@@ -1,0 +1,32 @@
+name: Sync BeeAI Upstream Files
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # ഓരോ 6 മണിക്കൂർ കൂടുമ്പോഴും ഓട്ടോമാറ്റിക്കായി റൺ ചെയ്യും
+  workflow_dispatch: # മാനുവൽ ആയി എപ്പോൾ വേണമെങ്കിലും റൺ ചെയ്യാൻ
+
+jobs:
+  sync_upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Your Repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Pull Latest Files from BeeAI Upstream into beeai folder
+        run: |
+          # റിമോട്ട് അപ്സ്ട്രീം കോൺഫിഗർ ചെയ്യുന്നു
+          git remote add upstream https://github.com/i-am-bee/beeai-framework.git || git remote set-url upstream https://github.com/i-am-bee/beeai-framework.git
+          git fetch upstream
+          
+          # beeai ഫോൾഡർ ക്രിയേറ്റ് ചെയ്ത് ഒറിജിനൽ ഫയലുകൾ അതിലേക്ക് സിങ്ക് ചെയ്യുന്നു
+          mkdir -p beeai
+          git checkout upstream/main -- . 
+          
+      - name: Commit and Push Updates
+        run: |
+          git config --global user.name "Zohai Sync Bot"
+          git config --global user.email "bot@zohai.local"
+          git add .
+          git diff --quiet && git diff --cached --quiet || (git commit -m "Auto-sync BeeAI repository files into beeai folder" && git push origin main)
