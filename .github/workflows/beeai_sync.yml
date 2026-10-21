@@ -12,15 +12,17 @@ jobs:
       - name: Checkout Your Repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_PAT }}
+          persist-credentials: false
+
+      - name: Authenticate with GitHub Token
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/maybetv/Zohai1.git
 
       - name: Pull Latest Files from BeeAI Upstream into beeai folder
         run: |
-          # റിമോട്ട് അപ്സ്ട്രീം കോൺഫിഗർ ചെയ്യുന്നു
           git remote add upstream https://github.com/i-am-bee/beeai-framework.git || git remote set-url upstream https://github.com/i-am-bee/beeai-framework.git
           git fetch upstream
           
-          # beeai ഫോൾഡർ ക്രിയേറ്റ് ചെയ്ത് ഒറിജിനൽ ഫയലുകൾ അതിലേക്ക് സിങ്ക് ചെയ്യുന്നു
           mkdir -p beeai
           git checkout upstream/main -- . 
           
