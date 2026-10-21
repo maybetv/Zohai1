@@ -9,20 +9,11 @@ jobs:
   sync_upstream:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Your Repository
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          submodules: false
-
-      - name: Remove Old Submodule Config
+      - name: Clone Repository Manually
         run: |
-          rm -f .gitmodules
-          git rm -rf --cached repos/beeai || true
-
-      - name: Authenticate with GitHub Token
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/maybetv/Zohai1.git
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/maybetv/Zohai1.git .
+          git config --global user.name "Zohai Sync Bot"
+          git config --global user.email "bot@zohai.local"
 
       - name: Pull Latest Files from BeeAI Upstream into beeai folder
         run: |
@@ -34,7 +25,5 @@ jobs:
           
       - name: Commit and Push Updates
         run: |
-          git config --global user.name "Zohai Sync Bot"
-          git config --global user.email "bot@zohai.local"
           git add .
           git diff --quiet && git diff --cached --quiet || (git commit -m "Auto-sync BeeAI repository files into beeai folder" && git push origin main)
