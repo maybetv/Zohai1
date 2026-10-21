@@ -15,6 +15,11 @@ jobs:
           persist-credentials: false
           submodules: false
 
+      - name: Remove Old Submodule Config
+        run: |
+          rm -f .gitmodules
+          git rm -rf --cached repos/beeai || true
+
       - name: Authenticate with GitHub Token
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/maybetv/Zohai1.git
